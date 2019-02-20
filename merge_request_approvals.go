@@ -127,3 +127,61 @@ func (s *MergeRequestApprovalsService) UnapproveMergeRequest(pid interface{}, mr
 
 	return s.client.Do(req, nil)
 }
+
+// ChangeMergeRequestApprovalsRequiredOptions represents the available ChangeMergeRequestApprovalsRequired()
+// options.
+//
+// GitLab API docs:
+// 
+type ChangeMergeRequestApprovalsRequiredOptions struct {
+        ApprovalsRequired int `url:"approvals_required" json:"approvals_required"`
+}
+
+// ChangeMergeRequestApprovalsRequired change number of approvals required
+//
+// GitLab API docs:
+// https://docs.gitlab.com/ee/api/merge_request_approvals.html#change-approval-configuration
+func (s *MergeRequestApprovalsService) ChangeMergeRequestApprovalsRequired(pid interface{}, mr int, opt *ChangeMergeRequestApprovalsRequiredOptions, options ...OptionFunc) (*Response, error) {
+	project, err := parseID(pid)
+	if err != nil {
+		return nil, err
+	}
+	u := fmt.Sprintf("projects/%s/merge_requests/%d/approvals", url.QueryEscape(project), mr)
+
+	req, err := s.client.NewRequest("POST", u, opt, options)
+	if err != nil {
+		return nil, err
+	}
+
+	return s.client.Do(req, nil)
+}
+
+// ChangeMergeRequestApproversOptions represents the available ChangeMergeRequestApprovers()
+// options.
+//
+// GitLab API docs:
+// https://docs.gitlab.com/ee/api/merge_request_approvals.html#change-allowed-approvers-for-merge-request
+type ChangeMergeRequestApproversOptions struct {
+        ApproverIDs      []int `url:"approver_ids,omitempty" json:"approver_ids"`
+        ApproverGroupIDs []int `url:"approver_group_ids,omitempty" json:"approver_group_ids"`
+}
+
+// ChangeMergeRequestApprovers change approvers and approver groups
+//
+// GitLab API docs:
+// https://docs.gitlab.com/ee/api/merge_request_approvals.html#change-allowed-approvers-for-merge-request
+func (s *MergeRequestApprovalsService) ChangeMergeRequestApprovers(pid interface{}, mr int, opt *ChangeMergeRequestApproversOptions, options ...OptionFunc) (*Response, error) {
+	project, err := parseID(pid)
+	if err != nil {
+		return nil, err
+	}
+	u := fmt.Sprintf("projects/%s/merge_requests/%d/approvers", url.QueryEscape(project), mr)
+
+	req, err := s.client.NewRequest("PUT", u, opt, options)
+	if err != nil {
+		return nil, err
+	}
+
+	return s.client.Do(req, nil)
+}
+
